@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="row_item_margin_vertical">12dp</dimen>
+    <dimen name="row_item_margin_horizontal">12dp</dimen>
+    <dimen name="large_text_size">24sp</dimen>
+    <dimen name="mid_text_size">16sp</dimen>
+    <dimen name="small_text_size">12sp</dimen>
+    <dimen name="back_drop_height">200dp</dimen>
+    <dimen name="card_view_elevation">2dp</dimen>
+    <dimen name="drawer_content_padding">24dp</dimen>
+    <dimen name="drawer_top_padding">44dp</dimen>
+</resources>
