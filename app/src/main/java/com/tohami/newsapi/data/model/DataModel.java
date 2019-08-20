@@ -1,6 +1,6 @@
 package com.tohami.newsapi.data.model;
 
-import com.tohami.newsapi.Constants;
+import com.tohami.newsapi.utilities.Constants;
 
 //mutable response body
 public class DataModel<T> {
@@ -10,7 +10,7 @@ public class DataModel<T> {
 
     /**
      * generic data model to be used in communication between repo and viewModel
-     * @param status the response status one on @{@link com.tohami.newsapi.Constants.Status}
+     * @param status the response status one on @{@link Constants.Status}
      * @param errorMsg the error message , will be null if response is success
      * @param responseBody the response , will be null if request failed
      */

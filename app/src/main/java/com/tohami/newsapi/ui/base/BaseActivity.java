@@ -1,4 +1,4 @@
-package com.tohami.newsapi.base;
+package com.tohami.newsapi.ui.base;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -7,20 +7,21 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
-import com.tohami.newsapi.NewsApplication;
+import com.tohami.newsapi.app.NewsApplication;
 import com.tohami.newsapi.R;
 import com.tohami.newsapi.utilities.LocaleContextWrapper;
 
-import static com.tohami.newsapi.Constants.Prefs.LANGUAGE_KEY;
+import dagger.android.support.DaggerAppCompatActivity;
+
+import static com.tohami.newsapi.utilities.Constants.Prefs.LANGUAGE_KEY;
 import static com.tohami.newsapi.utilities.LocalizationHelper.LOCALE_ENGLISH;
 
 
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends DaggerAppCompatActivity {
 
     protected Toolbar myToolbar;
 

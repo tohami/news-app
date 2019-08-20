@@ -1,4 +1,4 @@
-package com.tohami.newsapi;
+package com.tohami.newsapi.utilities;
 
 public class Constants {
     public class Prefs {
@@ -14,15 +14,16 @@ public class Constants {
     }
 
     public enum Status {
-        SUCCESS , FAIL , LOADING
+        SUCCESS , FAIL , LOADING , NO_NETWORK
     }
 
     public class Api {
-        public static final String DEFAULT_REQUEST_ERROR = "Server Can not process your request \uD83D\uDE13" ;
-        public static final String DEFAULT_NETWORK_ERROR = "Can not submit your request \uD83D\uDE25" ;
+        public static final String RESULT_OK = "ok";
     }
 
     public class News {
         public static final String DEFAULT_AUTHOR_NAME = "Anonymous" ;
+        public static final String ARGS_ARTICLE = "article" ;
+
     }
 }

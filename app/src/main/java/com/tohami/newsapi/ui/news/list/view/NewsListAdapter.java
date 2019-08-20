@@ -1,25 +1,28 @@
-package com.tohami.newsapi.adapter;
+package com.tohami.newsapi.ui.news.list.view;
 
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+import com.tohami.newsapi.R;
 import com.tohami.newsapi.data.model.NewsArticle;
-import com.tohami.newsapi.databinding.ItemNewsBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ArticleItemHolder> {
+public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.ArticleItemHolder> {
 
     private final List<NewsArticle> newsList;
     private final OnItemClickedListener onItemClickListener;
 
-    public NewsAdapter(List<NewsArticle> list, OnItemClickedListener clickListener) {
+    public NewsListAdapter(List<NewsArticle> list, OnItemClickedListener clickListener) {
         newsList = new ArrayList<>(list);
         this.onItemClickListener = clickListener;
     }
@@ -48,9 +51,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ArticleItemHol
     @NonNull
     @Override
     public ArticleItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        //Uses DataBinding to inflate the Item View
-        ItemNewsBinding itemBinding = ItemNewsBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new ArticleItemHolder(itemBinding);
+        View root = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_news, parent, false);
+        return new ArticleItemHolder(root);
     }
 
     @Override
@@ -62,23 +64,37 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ArticleItemHol
      * View Holder for a {@link NewsArticle} RecyclerView list item.
      */
     public class ArticleItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private final ItemNewsBinding mDataBinding;
+        ImageView ivArticleImage;
+        TextView tvArticleTitle;
+        TextView tvArticleAuthor;
+        TextView tvArticlePublishDate;
 
-        ArticleItemHolder(ItemNewsBinding itemBinding) {
-            super(itemBinding.getRoot());
-            this.mDataBinding = itemBinding;
+        ArticleItemHolder(View rootView) {
+            super(rootView);
 
-            View itemView = itemBinding.getRoot();
+            ivArticleImage = rootView.findViewById(R.id.iv_article_image);
+            tvArticleTitle = rootView.findViewById(R.id.tv_article_title);
+            tvArticleAuthor = rootView.findViewById(R.id.tv_article_author);
+            tvArticlePublishDate = rootView.findViewById(R.id.tv_article_publish_date);
+
             itemView.setOnClickListener(this);
         }
 
         private void bind(NewsArticle article) {
 
             if (article != null) {
-                //When article is not null, data binding will be automatically done in the layout
-                mDataBinding.setArticle(article);
-                //For Immediate Binding
-                mDataBinding.executePendingBindings();
+                tvArticleTitle.setText(article.getTitle());
+                tvArticleAuthor.setText(article.getAuthor());
+                tvArticlePublishDate.setText(article.getPublishedAt());
+
+                if(article.getUrlToImage() == null || article.getUrlToImage().isEmpty())
+                    ivArticleImage.setImageResource(R.drawable.temp_image);
+                else {
+                    Picasso.get().load(article.getUrlToImage())
+                            .error(R.drawable.temp_image)
+                            .placeholder(R.drawable.temp_image)
+                            .into(ivArticleImage);
+                }
             }
         }
 
@@ -91,7 +107,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ArticleItemHol
         public void onClick(View view) {
             if (getAdapterPosition() > RecyclerView.NO_POSITION && getAdapterPosition() < newsList.size()) {
                 NewsArticle article = newsList.get(getAdapterPosition());
-                onItemClickListener.onItemClicked(article);
+                onItemClickListener.onItemClicked(view , article);
 
             }
         }
@@ -99,6 +115,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ArticleItemHol
 
 
     public interface OnItemClickedListener {
-        void onItemClicked(NewsArticle item);
+        void onItemClicked(View view , NewsArticle item);
     }
 }

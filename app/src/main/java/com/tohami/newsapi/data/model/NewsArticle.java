@@ -2,8 +2,7 @@ package com.tohami.newsapi.data.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.tohami.newsapi.Constants;
-import com.tohami.newsapi.data.model.NewsSource;
+import com.tohami.newsapi.utilities.Constants;
 import com.tohami.newsapi.utilities.DateTimeHelper;
 
 public class NewsArticle {

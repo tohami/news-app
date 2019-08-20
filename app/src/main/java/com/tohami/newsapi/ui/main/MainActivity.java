@@ -1,30 +1,44 @@
-package com.tohami.newsapi.ui.news;
+package com.tohami.newsapi.ui.main;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.navigation.NavigationView;
 import com.tohami.newsapi.R;
-import com.tohami.newsapi.base.BaseActivity;
+import com.tohami.newsapi.ui.base.BaseActivity;
+import com.tohami.newsapi.ui.news.list.viewModel.NewsListViewModel;
+import com.tohami.newsapi.ui.news.list.viewModel.NewsListViewModelFactory;
+import com.tohami.newsapi.utilities.ViewHelpers;
 
-public class NewsActivity extends BaseActivity {
+import javax.inject.Inject;
+
+public class MainActivity extends BaseActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout drawerLayout;
     private NavController navController;
     private NavigationView navigationView;
+    private NewsListViewModel mViewModel;
+
+    @Inject
+    NewsListViewModelFactory viewModelFactory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mViewModel = ViewModelProviders.of(this, viewModelFactory)
+                .get(NewsListViewModel.class);
+
+        if (savedInstanceState == null)
+            mViewModel.refreshNewsList();
     }
 
     @Override
@@ -51,11 +65,10 @@ public class NewsActivity extends BaseActivity {
         mDrawerToggle.setToolbarNavigationClickListener(view -> navController.popBackStack());
 
         navigationView.setNavigationItemSelectedListener(menuItem -> {
-            Toast.makeText(
-                    NewsActivity.this,
-                    getString(R.string.clicked , menuItem.getTitle() , "\uD83D\uDE02"),
-                    Toast.LENGTH_SHORT)
-                    .show();
+            ViewHelpers.showToast(
+                    MainActivity.this,
+                    getString(R.string.clicked, menuItem.getTitle())
+            );
 
             drawerLayout.closeDrawers();
             return false;
@@ -90,12 +103,6 @@ public class NewsActivity extends BaseActivity {
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main;
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override

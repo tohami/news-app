@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/fragmentNewsList"
-        android:name="com.tohami.newsapi.ui.news.NewsFragment"
+        android:name="com.tohami.newsapi.ui.news.list.view.NewsListFragment"
         android:label="fragment_news_list"
-        tools:layout="@layout/fragment_news">
+        tools:layout="@layout/fragment_news_list">
         <action
             android:id="@+id/action_fragmentNewsList_to_fragmentArticle"
             app:destination="@id/fragmentArticle"
@@ -20,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/fragmentArticle"
-        android:name="com.tohami.newsapi.ui.news.ArticleFragment"
+        android:name="com.tohami.newsapi.ui.news.details.view.NewsDetailsFragment"
         android:label="fragment_article"
-        tools:layout="@layout/fragment_news" />
+        tools:layout="@layout/fragment_news_list" />
 </navigation>

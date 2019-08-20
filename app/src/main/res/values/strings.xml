@@ -20,7 +20,7 @@
     <string name="gallery">Gallery</string>
     <string name="wish_list">Wish List</string>
     <string name="magazine">E-magazine</string>
-    <string name="clicked">%s clicked %s</string>
+    <string name="clicked">%s clicked</string>
     <string name="open_website">Open Website</string>
 
 </resources>

@@ -1,17 +1,22 @@
-package com.tohami.newsapi;
+package com.tohami.newsapi.app;
 
-import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 
 import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
+import com.tohami.newsapi.utilities.Constants;
+import com.tohami.newsapi.app.di.ApplicationComponent;
+import com.tohami.newsapi.app.di.DaggerApplicationComponent;
 import com.tohami.newsapi.utilities.LocalizationHelper;
 
-import static com.tohami.newsapi.Constants.Prefs.LANGUAGE_KEY;
+import dagger.android.AndroidInjector;
+import dagger.android.support.DaggerApplication;
+
+import static com.tohami.newsapi.utilities.Constants.Prefs.LANGUAGE_KEY;
 import static com.tohami.newsapi.utilities.LocalizationHelper.LOCALE_ENGLISH;
 
-public class NewsApplication extends Application {
+public class NewsApplication extends DaggerApplication {
 
 	public static SharedPreferences preferences ;
 
@@ -49,5 +54,13 @@ public class NewsApplication extends Application {
 
 		super.onConfigurationChanged(newConfig);
 		LocalizationHelper.changeAppLanguage(language , this);
+	}
+
+	@Override
+	protected AndroidInjector<? extends DaggerApplication> applicationInjector() {
+		ApplicationComponent component = DaggerApplicationComponent.builder().application(this).build();
+		component.inject(this);
+
+		return component;
 	}
 }

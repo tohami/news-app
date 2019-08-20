@@ -5,7 +5,7 @@ import android.content.res.Resources;
 
 import java.util.Locale;
 
-import static com.tohami.newsapi.Constants.Prefs.APP_LOCALE_KEY;
+import static com.tohami.newsapi.utilities.Constants.Prefs.APP_LOCALE_KEY;
 
 /**
  * Created by Sherif.ElNady on 10/19/2016.
