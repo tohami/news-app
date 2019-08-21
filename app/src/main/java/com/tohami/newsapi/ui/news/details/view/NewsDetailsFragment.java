@@ -1,5 +1,6 @@
 package com.tohami.newsapi.ui.news.details.view;
 
+import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,12 +12,19 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.tohami.newsapi.R;
-import com.tohami.newsapi.ui.base.BaseFragment;
+import com.tohami.newsapi.data.model.DataModel;
 import com.tohami.newsapi.data.model.NewsArticle;
+import com.tohami.newsapi.ui.base.BaseFragment;
+import com.tohami.newsapi.ui.news.details.viewModel.NewsDetailsViewModel;
+import com.tohami.newsapi.ui.news.details.viewModel.NewsDetailsViewModelFactory;
+import com.victor.loading.book.BookLoading;
+
+import io.reactivex.functions.Consumer;
 
 import static com.tohami.newsapi.utilities.Constants.News.ARGS_ARTICLE;
 
@@ -28,28 +36,35 @@ public class NewsDetailsFragment extends BaseFragment {
     private TextView tvArticlePublishDate;
     private TextView tvArticleDescription;
     private Button btnOpenWebsite;
+    private View articleContainer;
+    private TextView tvError;
+    private BookLoading bookLoading;
     private NewsArticle newsArticle;
-    private View articleContainer , tvError ;
 
-
+    @SuppressLint("CheckResult")
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        newsArticle = getArticleFromBundle(getArguments()) ;
+        newsArticle = getArticleFromBundle(getArguments());
 
+        NewsDetailsViewModel mViewModel
+                = ViewModelProviders.of(getActivity(), new NewsDetailsViewModelFactory(newsArticle))
+                .get(NewsDetailsViewModel.class);
+
+        mViewModel.getNewsDetailsObservable().subscribe(getNewsDetailsConsumer);
         updateUi(newsArticle);
     }
 
     private NewsArticle getArticleFromBundle(@Nullable Bundle args) {
-        if(args != null && args.containsKey(ARGS_ARTICLE)){
-            return new Gson().fromJson(args.getString(ARGS_ARTICLE) , NewsArticle.class);
-        }else {
-            return null ;
+        if (args != null && args.containsKey(ARGS_ARTICLE)) {
+            return new Gson().fromJson(args.getString(ARGS_ARTICLE), NewsArticle.class);
+        } else {
+            return null;
         }
     }
 
     private void updateUi(@Nullable NewsArticle newsArticle) {
-        if(newsArticle != null) {
+        if (newsArticle != null) {
             tvArticleTitle.setText(newsArticle.getTitle());
             tvArticleAuthor.setText(newsArticle.getAuthor());
             tvArticlePublishDate.setText(newsArticle.getPublishedAtFormatted());
@@ -62,7 +77,7 @@ public class NewsDetailsFragment extends BaseFragment {
                         .placeholder(R.drawable.temp_image)
                         .into(ivArticleImage);
             }
-        }else {
+        } else {
             articleContainer.setVisibility(View.GONE);
             tvError.setVisibility(View.VISIBLE);
         }
@@ -72,8 +87,9 @@ public class NewsDetailsFragment extends BaseFragment {
     protected View initializeViews(int layoutId, LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(layoutId, container, false);
 
-        articleContainer = rootView.findViewById(R.id.article_container) ;
-        tvError = rootView.findViewById(R.id.tv_error) ;
+        articleContainer = rootView.findViewById(R.id.article_container);
+        tvError = rootView.findViewById(R.id.tv_error);
+        bookLoading = rootView.findViewById(R.id.bookloading);
         ivArticleImage = rootView.findViewById(R.id.iv_article_image);
         tvArticleTitle = rootView.findViewById(R.id.tv_article_title);
         tvArticleAuthor = rootView.findViewById(R.id.tv_article_author);
@@ -96,4 +112,37 @@ public class NewsDetailsFragment extends BaseFragment {
     protected int getLayoutId() {
         return R.layout.fragment_news_details;
     }
+
+    private Consumer<DataModel<NewsArticle>> getNewsDetailsConsumer = new Consumer<DataModel<NewsArticle>>() {
+        @Override
+        public void accept(DataModel<NewsArticle> listDataModel) {
+            switch (listDataModel.getStatus()) {
+                case SUCCESS:
+                    articleContainer.setVisibility(View.VISIBLE);
+                    tvError.setVisibility(View.GONE);
+                    bookLoading.setVisibility(View.GONE);
+                    updateUi(listDataModel.getResponseBody());
+                    break;
+                case FAIL:
+                    articleContainer.setVisibility(View.GONE);
+                    tvError.setVisibility(View.VISIBLE);
+                    bookLoading.setVisibility(View.GONE);
+                    tvError.setText(listDataModel.getErrorMsg());
+                    break;
+                case NO_NETWORK:
+                    articleContainer.setVisibility(View.GONE);
+                    tvError.setVisibility(View.VISIBLE);
+                    bookLoading.setVisibility(View.GONE);
+                    tvError.setText(R.string.error_no_internet_connection);
+                    break;
+                case LOADING:
+                    articleContainer.setVisibility(View.GONE);
+                    tvError.setVisibility(View.GONE);
+                    bookLoading.setVisibility(View.VISIBLE);
+                    bookLoading.start();
+                    break;
+            }
+        }
+    };
+
 }

@@ -31,13 +31,13 @@ import io.reactivex.functions.Consumer;
 import static com.tohami.newsapi.utilities.Constants.News.ARGS_ARTICLE;
 
 public class NewsListFragment extends BaseFragment implements NewsListAdapter.OnItemClickedListener {
-    private NewsListViewModel mViewModel;
-    private RecyclerView newsRecycleView ;
-    private SwipeRefreshLayout newsRefreshLayout ;
-    private TextView errorTextView ;
+    private RecyclerView rvNews;
+    private SwipeRefreshLayout rlNews;
+    private TextView tvError;
     private BookLoading bookLoading ;
     private NewsListAdapter newsListAdapter;
 
+    private NewsListViewModel mViewModel;
     @Inject
     NewsListViewModelFactory viewModelFactory;
 
@@ -55,23 +55,23 @@ public class NewsListFragment extends BaseFragment implements NewsListAdapter.On
     protected View initializeViews(int layoutId, LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate( layoutId, container, false);
         
-        newsRefreshLayout = rootView.findViewById(R.id.refresh_layout) ; 
-        newsRecycleView = rootView.findViewById(R.id.rv_news) ;
-        errorTextView = rootView.findViewById(R.id.tv_error) ; 
+        rlNews = rootView.findViewById(R.id.refresh_layout) ;
+        rvNews = rootView.findViewById(R.id.rv_news) ;
+        tvError = rootView.findViewById(R.id.tv_error) ;
         bookLoading = rootView.findViewById(R.id.bookloading) ;
         
         newsListAdapter = new NewsListAdapter(new ArrayList<>() , this);
-        newsRecycleView.setAdapter(newsListAdapter);
+        rvNews.setAdapter(newsListAdapter);
         
         return rootView;
     }
 
     @Override
     protected void setListeners() {
-        newsRefreshLayout.setOnRefreshListener(() -> {
+        rlNews.setOnRefreshListener(() -> {
             mViewModel.refreshNewsList();
             //hide the refresh indication
-            newsRefreshLayout.setRefreshing(false);
+            rlNews.setRefreshing(false);
         });
 
     }
@@ -88,7 +88,7 @@ public class NewsListFragment extends BaseFragment implements NewsListAdapter.On
         args.putString(ARGS_ARTICLE , articleJson);
         Navigation
                 .findNavController(view)
-                .navigate(R.id.action_fragmentNewsList_to_fragmentArticle , args);
+                .navigate(R.id.action_fragmentNewsList_to_fragmentNewsDetails , args);
     }
 
 
@@ -97,30 +97,30 @@ public class NewsListFragment extends BaseFragment implements NewsListAdapter.On
         public void accept(DataModel<List<NewsArticle>> listDataModel) {
             switch (listDataModel.getStatus()) {
                 case SUCCESS:
-                    newsRefreshLayout.setEnabled(true);
-                    newsRecycleView.setVisibility(View.VISIBLE);
-                    errorTextView.setVisibility(View.GONE);
+                    rlNews.setEnabled(true);
+                    rvNews.setVisibility(View.VISIBLE);
+                    tvError.setVisibility(View.GONE);
                     bookLoading.setVisibility(View.GONE);
                     newsListAdapter.replaceItems(listDataModel.getResponseBody());
                     break;
                 case FAIL:
-                    newsRefreshLayout.setEnabled(true);
-                    newsRecycleView.setVisibility(View.GONE);
-                    errorTextView.setVisibility(View.VISIBLE);
+                    rlNews.setEnabled(true);
+                    rvNews.setVisibility(View.GONE);
+                    tvError.setVisibility(View.VISIBLE);
                     bookLoading.setVisibility(View.GONE);
-                    errorTextView.setText(listDataModel.getErrorMsg());
+                    tvError.setText(listDataModel.getErrorMsg());
                     break;
                 case NO_NETWORK:
-                    newsRefreshLayout.setEnabled(true);
-                    newsRecycleView.setVisibility(View.GONE);
-                    errorTextView.setVisibility(View.VISIBLE);
+                    rlNews.setEnabled(true);
+                    rvNews.setVisibility(View.GONE);
+                    tvError.setVisibility(View.VISIBLE);
                     bookLoading.setVisibility(View.GONE);
-                    errorTextView.setText(R.string.noInternet);
+                    tvError.setText(R.string.error_no_internet_connection);
                     break;
                 case LOADING:
-                    newsRefreshLayout.setEnabled(false);
-                    newsRecycleView.setVisibility(View.GONE);
-                    errorTextView.setVisibility(View.GONE);
+                    rlNews.setEnabled(false);
+                    rvNews.setVisibility(View.GONE);
+                    tvError.setVisibility(View.GONE);
                     bookLoading.setVisibility(View.VISIBLE);
                     bookLoading.start();
                     newsListAdapter.replaceItems(new ArrayList<>());
