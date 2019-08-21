@@ -1,7 +1,6 @@
 package com.tohami.newsapi.ui.news.list.viewModel;
 
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 
 import com.tohami.newsapi.BuildConfig;
 import com.tohami.newsapi.data.model.DataModel;
@@ -13,8 +12,6 @@ import com.tohami.newsapi.utilities.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -59,26 +56,27 @@ public class NewsListViewModel extends BaseViewModel {
 
         addDisposable(Single.zip(theNextWeb, associatedPress, this::combineLatestData)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()).subscribeWith(newsCombinationSubscription));
+                .observeOn(AndroidSchedulers.mainThread()).subscribeWith(getFreshCombinationSubscriber()));
 
         DataModel<List<NewsArticle>> loading = new DataModel<>(Constants.Status.LOADING, null, null);
         newsArticlesSubject.onNext(loading);
 
     }
 
-    private DisposableSingleObserver<DataModel<List<NewsArticle>>> newsCombinationSubscription =
-            new DisposableSingleObserver<DataModel<List<NewsArticle>>>() {
-        @Override
-        public void onSuccess(DataModel<List<NewsArticle>> value) {
-            newsArticlesSubject.onNext(value);
-        }
+    private DisposableSingleObserver<DataModel<List<NewsArticle>>> getFreshCombinationSubscriber() {
+        return new DisposableSingleObserver<DataModel<List<NewsArticle>>>() {
+            @Override
+            public void onSuccess(DataModel<List<NewsArticle>> value) {
+                newsArticlesSubject.onNext(value);
+            }
 
-        @Override
-        public void onError(Throwable e) {
-            DataModel<List<NewsArticle>> error = new DataModel<>(Constants.Status.FAIL, e.getMessage(), null);
-            newsArticlesSubject.onNext(error);
-        }
-    } ;
+            @Override
+            public void onError(Throwable e) {
+                DataModel<List<NewsArticle>> error = new DataModel<>(Constants.Status.FAIL, e.getMessage(), null);
+                newsArticlesSubject.onNext(error);
+            }
+        } ;
+    }
 
     private DataModel<List<NewsArticle>> combineLatestData(
             NewsResponse source1,
